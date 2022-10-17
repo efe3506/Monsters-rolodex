@@ -1,7 +1,8 @@
 import { Component } from "react";
 import "./App.css";
+import CardList from "./components/card-list/Card-list.component";
+import SearchBox from "./components/search-box/search-box.component";
 
-//!6 AĞUSTOS 01.55.24
 class App extends Component {
   constructor() {
     super();
@@ -11,19 +12,15 @@ class App extends Component {
     };
     // console.log("constructor");
   }
+
   componentDidMount() {
     // console.log("didMount");
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
       .then((users) =>
-        this.setState(
-          () => {
-            return { canavarlar: users };
-          },
-          () => {
-            console.log(this.state);
-          }
-        )
+        this.setState(() => {
+          return { canavarlar: users };
+        })
       );
   }
   aramaDeğişikliği = (e) => {
@@ -32,28 +29,26 @@ class App extends Component {
       return { aramaAlanı };
     });
   };
+
   render() {
+    // console.log("App js render ");
     const { canavarlar, aramaAlanı } = this.state;
-    const { aramaDeğişikliği } = this.aramaDeğişikliği;
+    const { aramaDeğişikliği } = this;
     // console.log("render");
-    const filtrelenmişCanavarlar = this.state.canavarlar.filter((canavar) => {
-      return canavar.name.toLocaleLowerCase().includes(this.state.aramaAlanı);
+    const filtrelenmişCanavarlar = canavarlar.filter((canavar) => {
+      return canavar.name.toLocaleLowerCase().includes(aramaAlanı);
     });
     return (
       <div className="App">
-        <input
-          className="search-box"
-          type="search"
+        <h1 className="app-title">
+          <em>-Monsters Rolodex-</em>
+        </h1>
+        <SearchBox
+          onChangeHandler={aramaDeğişikliği}
           placeholder="Search for monsters..."
-          onChange={this.aramaDeğişikliği}
+          className="monsters-search-box"
         />
-        {filtrelenmişCanavarlar.map((canavar) => {
-          return (
-            <div key={canavar.id}>
-              <h1>{canavar.name}</h1>
-            </div>
-          );
-        })}
+        <CardList canavarlar={filtrelenmişCanavarlar} />
       </div>
     );
   }
